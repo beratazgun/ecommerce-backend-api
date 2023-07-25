@@ -1,0 +1,67 @@
+
+doctype html
+html
+  head
+    meta(name='viewport', content='width=device-width')
+    meta(http-equiv='Content-Type', content='text/html; charset=UTF-8')
+    title= subject
+  
+  style.
+    body {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      font-size: 14px;
+      line-height: 1.4em;
+      margin: 0;
+      padding: 0;
+      -ms-text-size-adjust: 100%;
+      -webkit-
+    }
+
+    table.body-wrap {
+      width: 100%;
+      padding: 20px;
+    }
+
+    table.body-wrap .container {
+      border: 1px solid #f0f0f0;
+    }
+
+    table.footer-wrap {
+      width: 100%;
+      clear: both!important;
+    }
+
+    a {
+      color: white;
+      background-color: green;
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 10px
+    }
+
+    .header {
+      font-size: 22px;
+      color: #444444;
+      margin-bottom: 10px;
+      font-weight: bold;
+      text-align: start;
+    }
+
+    p {
+      font-size: 18px;
+    }
+
+  body
+    p.header Hello #{firstName} #{lastName},
+    p Welcome to Byte Bazaar! To verify your account, you will be directed to the coded verification page by clicking the link below:
+    a(href=`${url}`) Verify your account
+    p This link can only be used by you as the account holder and will expire after 15 minutes.
+    p For the security of your account, do not share this message with anyone.
+    p Kind regards,
+    p Byte Bazaar Team
+
+
+
+
+
