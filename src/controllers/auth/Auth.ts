@@ -7,7 +7,7 @@ import EmailService from '../../services/email/EmailService'
 import { redisConnection } from '../../services/redis/redisConnection'
 import { SellerSchemaFields } from '../../models/seller.model'
 import { CustomerSchemaFields } from '../../models/customer.model'
-import { sendCSRFToken } from '../../utils/sendCSRFToken'
+import Tokens from 'csrf'
 
 export interface ModelInterface
 	extends SellerSchemaFields,
@@ -68,7 +68,7 @@ export default abstract class Auth {
 				req.session.user = model
 			}
 
-			sendCSRFToken(res, req)
+			this.sendCSRFToken(req, res, next)
 
 			res.status(200).json({
 				status: 'success',
@@ -172,6 +172,20 @@ export default abstract class Auth {
 			}
 
 			next()
+		}
+	)
+
+	sendCSRFToken = AsyncCatchError(
+		async (req: Request, res: Response, next: NextFunction) => {
+			const secret = new Tokens().secretSync()
+			const token = new Tokens().create(secret)
+
+			res.cookie('csrfToken', token, {
+				httpOnly: true,
+				sameSite: 'strict',
+			})
+
+			req.session.csrfToken = token
 		}
 	)
 
