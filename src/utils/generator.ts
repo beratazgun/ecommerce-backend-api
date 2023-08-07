@@ -14,11 +14,4 @@ function generateSlug(str: string) {
 	})
 }
 
-function generateCSRFToken() {
-	const secret = new Tokens().secretSync()
-	const token = new Tokens().create(secret)
-
-	return { secret, token }
-}
-
-export { generateSlug, nanoIdGenerator, generateCSRFToken }
+export { generateSlug, nanoIdGenerator }
