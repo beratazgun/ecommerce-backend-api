@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import AsyncCatchError from '../utils/AsyncCatchError'
 import FormFields from '../models/formFields.model'
 import createHttpError from 'http-errors'
-import { client } from '../services/redis/client'
+import { redisConnection } from '../services/redis/redisConnection'
 import Category from '../models/category.model'
 import { formField } from '../services/redis/keys'
 import { unset } from 'lodash'
@@ -27,7 +27,7 @@ export default class FormFieldsController {
 				unset(el, '_id')
 			}
 
-			client.set(
+			redisConnection.set(
 				formField(req.body.category),
 				JSON.stringify({
 					category: formFields.toObject().category,
@@ -44,7 +44,9 @@ export default class FormFieldsController {
 
 	getFormFields = AsyncCatchError(
 		async (req: Request, res: Response, next: NextFunction) => {
-			const checkRedis = await client.get(formField(req.params.category))
+			const checkRedis = await redisConnection.get(
+				formField(req.params.category)
+			)
 
 			if (checkRedis) {
 				return res.status(200).json({
@@ -79,7 +81,10 @@ export default class FormFieldsController {
 					return next(createHttpError(404, 'Form fields not found.'))
 				}
 
-				client.set(formField(req.params.category), JSON.stringify(formFields))
+				redisConnection.set(
+					formField(req.params.category),
+					JSON.stringify(formFields)
+				)
 
 				res.status(200).json({
 					success: true,

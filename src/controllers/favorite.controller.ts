@@ -1,6 +1,6 @@
 import AsyncCatchError from '../utils/AsyncCatchError'
 import { Request, Response, NextFunction } from 'express'
-import { client } from '../services/redis/client'
+import { redisConnection } from '../services/redis/redisConnection'
 import { favorite } from '../services/redis/keys'
 import createHttpError from 'http-errors'
 
@@ -10,13 +10,16 @@ export default class FavoriteController {
 			const { productId } = req.body
 			const { _id } = req.session.user
 
-			const isExist = await client.sismember(favorite(_id as string), productId)
+			const isExist = await redisConnection.sismember(
+				favorite(_id as string),
+				productId
+			)
 
 			if (isExist) {
 				return next(new createHttpError.BadRequest('Already Added'))
 			}
 
-			await client.sadd(favorite(_id as string), productId)
+			await redisConnection.sadd(favorite(_id as string), productId)
 
 			res.status(200).json({
 				status: 'success',
@@ -29,7 +32,7 @@ export default class FavoriteController {
 		async (req: Request, res: Response, next: NextFunction) => {
 			const { productId } = req.body
 			const { _id } = req.session.user
-			const isExist = await client.sismember(
+			const isExist = await redisConnection.sismember(
 				favorite(_id as string),
 				productId as string
 			)
@@ -47,7 +50,7 @@ export default class FavoriteController {
 		async (req: Request, res: Response, next: NextFunction) => {
 			const { _id } = req.session.user
 
-			const data = await client.smembers(favorite(_id as string))
+			const data = await redisConnection.smembers(favorite(_id as string))
 
 			res.status(200).json({
 				status: 'success',
@@ -61,7 +64,10 @@ export default class FavoriteController {
 			const { productId } = req.body
 			const { _id } = req.session.user
 
-			const isExist = await client.srem(favorite(_id as string), productId)
+			const isExist = await redisConnection.srem(
+				favorite(_id as string),
+				productId
+			)
 
 			if (isExist === 0) {
 				return next(new createHttpError.BadRequest('Not Found'))

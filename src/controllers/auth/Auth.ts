@@ -4,7 +4,7 @@ import createHttpError from 'http-errors'
 import { LoginData, forgotPasswordData, updatePasswordData } from './interface'
 import mongoose from 'mongoose'
 import EmailService from '../../services/email/EmailService'
-import { client } from '../../services/redis/client'
+import { redisConnection } from '../../services/redis/redisConnection'
 import { SellerSchemaFields } from '../../models/seller.model'
 import { CustomerSchemaFields } from '../../models/customer.model'
 import { sendCSRFToken } from '../../utils/sendCSRFToken'
@@ -126,7 +126,7 @@ export default abstract class Auth {
 		async (req: Request, res: Response, next: NextFunction) => {
 			const sesID = req.cookies?.sesID?.slice(2).split('.')[0] || req.sessionID
 
-			const model = await client.get(`sesID#${sesID}`)
+			const model = await redisConnection.get(`sesID#${sesID}`)
 
 			if (!model) {
 				return next(

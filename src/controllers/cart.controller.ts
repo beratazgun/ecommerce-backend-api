@@ -1,4 +1,4 @@
-import { client } from '../services/redis/client'
+import { redisConnection } from '../services/redis/redisConnection'
 import AsyncCatchError from '../utils/AsyncCatchError'
 import { Request, Response, NextFunction } from 'express'
 import { cart } from '../services/redis/keys'
@@ -61,7 +61,7 @@ class CartController {
 				return next(new Error('Product not found'))
 			}
 
-			const data = await client.hgetall(cart(_id))
+			const data = await redisConnection.hgetall(cart(_id))
 
 			const isExist = Object.keys(data).find((key) => {
 				return (
@@ -75,7 +75,10 @@ class CartController {
 			})
 
 			if (isExist) {
-				const existingItem = (await client.hget(cart(_id), isExist)) as string
+				const existingItem = (await redisConnection.hget(
+					cart(_id),
+					isExist
+				)) as string
 				const existingQuantity = JSON.parse(existingItem).quantity
 
 				updatedQuantity = existingQuantity + (quantity as number)
@@ -84,7 +87,7 @@ class CartController {
 
 			const cartId = nanoIdGenerator('1234567890', 16)
 
-			await client.hset(
+			await redisConnection.hset(
 				cart(_id),
 				isExist || cartId,
 				JSON.stringify({
@@ -128,7 +131,7 @@ class CartController {
 				return next(new Error('Please login to add to cart'))
 			}
 
-			const cartItems = await client.hgetall(cart(_id))
+			const cartItems = await redisConnection.hgetall(cart(_id))
 
 			res.status(200).json({
 				message: 'success',
@@ -173,13 +176,13 @@ class CartController {
 				return next(new Error('Please login to add to cart'))
 			}
 
-			const isExist = await client.hexists(cart(_id), id)
+			const isExist = await redisConnection.hexists(cart(_id), id)
 
 			if (!isExist) {
 				return next(new Error('Product not found'))
 			}
 
-			await client.hdel(cart(_id), id)
+			await redisConnection.hdel(cart(_id), id)
 
 			res.status(200).json({ message: 'success', isSuccess: true, status: 200 })
 		}
@@ -193,7 +196,7 @@ class CartController {
 				return next(new Error('Please login to add to cart'))
 			}
 
-			const cartItems = await client.hgetall(cart(_id))
+			const cartItems = await redisConnection.hgetall(cart(_id))
 
 			const itemsCount = Object.values(cartItems).reduce(
 				(acc, item) => acc + JSON.parse(item).quantity,

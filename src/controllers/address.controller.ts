@@ -4,7 +4,7 @@ import Address from '../models/address.model'
 import mongoose, { Schema } from 'mongoose'
 import createHttpError from 'http-errors'
 import { pick, map } from 'lodash'
-import { client } from '../services/redis/client'
+import { redisConnection } from '../services/redis/redisConnection'
 
 export default class AddressController {
 	createAddress = AsyncCatchError(
@@ -14,10 +14,10 @@ export default class AddressController {
 			const modelName = role === 'seller' ? 'Seller' : 'Customer'
 
 			const address = await Address.create({ ...req.body, [userRole]: _id })
-			await client
+			await redisConnection
 				.hset(`address#${_id}`, address._id.toString(), JSON.stringify(address))
 				.then(() => {
-					return client.expire(`address#${_id}`, 60 * 60 * 24 * 10)
+					return redisConnection.expire(`address#${_id}`, 60 * 60 * 24 * 10)
 				})
 
 			await mongoose.model(modelName).findByIdAndUpdate(
@@ -46,7 +46,7 @@ export default class AddressController {
 			const modelName = role === 'seller' ? 'Seller' : 'Customer'
 
 			const user = await mongoose.model(modelName).findById(_id)
-			await client.hdel(`address#${_id}`, addressId)
+			await redisConnection.hdel(`address#${_id}`, addressId)
 
 			if (!user.address.includes(addressId)) {
 				return next(
@@ -81,7 +81,7 @@ export default class AddressController {
 			let result: any = {}
 			let numberOfAddress: any = {}
 
-			const checkRedis = await client.hgetall(`address#${_id}`)
+			const checkRedis = await redisConnection.hgetall(`address#${_id}`)
 
 			if (checkRedis && Object.keys(checkRedis).length > 0) {
 				const addresses = Object.values(checkRedis).map((el) => JSON.parse(el))
@@ -104,14 +104,14 @@ export default class AddressController {
 				if (myAddresses.address.length !== 0) {
 					myAddresses?.address
 						?.forEach((el: any) => {
-							client.hset(
+							redisConnection.hset(
 								`address#${_id}`,
 								el._id.toString(),
 								JSON.stringify(el)
 							)
 						})
 						.then(() => {
-							return client.expire(`address#${_id}`, 60 * 60 * 24 * 10)
+							return redisConnection.expire(`address#${_id}`, 60 * 60 * 24 * 10)
 						})
 				}
 
@@ -137,7 +137,7 @@ export default class AddressController {
 			const allowedFields = pick(req.body, Object.keys(Address.schema.obj))
 
 			const model = await mongoose.model(modelName).findById(_id)
-			await client.hset(
+			await redisConnection.hset(
 				`address#${_id}`,
 				addressId,
 				JSON.stringify({

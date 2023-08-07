@@ -5,7 +5,7 @@ import bodyParser from 'body-parser'
 import express, { Express } from 'express'
 import cookieParser from 'cookie-parser'
 import sessions from 'express-session'
-import { client } from './services/redis/client'
+import { redisConnection } from './services/redis/redisConnection'
 import RedisStore from 'connect-redis'
 import cors from 'cors'
 import morgan from 'morgan'
@@ -58,7 +58,7 @@ app.use(
 app.use(
 	sessions({
 		store: new RedisStore({
-			client: client,
+			client: redisConnection,
 			prefix: 'sesID#',
 		}),
 		name: 'sesID',

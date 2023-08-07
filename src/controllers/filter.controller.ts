@@ -8,7 +8,7 @@ import Features from '../models/features.model'
 import Brand from '../models/brand.model'
 import ProductModel from '../models/productModel.model'
 import { map, uniq } from 'lodash'
-import { client } from '../services/redis/client'
+import { redisConnection } from '../services/redis/redisConnection'
 import { filter } from '../services/redis/keys'
 import { booleanOperatorList } from './product/queryList'
 
@@ -168,7 +168,7 @@ export default class FilterController {
 				category: checkCategory[0].categorySlug,
 			})
 
-			await client.set(
+			await redisConnection.set(
 				filter(checkCategory[0].category),
 				JSON.stringify({
 					filters: filterList,
@@ -192,7 +192,7 @@ export default class FilterController {
 		async (req: Request, res: Response, next: NextFunction) => {
 			const { category } = req.params
 
-			const checkRedis = await client.get(filter(category))
+			const checkRedis = await redisConnection.get(filter(category))
 
 			if (checkRedis === null) {
 				const fetchFilter = await Filter.aggregate([
@@ -237,7 +237,7 @@ export default class FilterController {
 				if (['cargoFree', 'externalStorage']) {
 				}
 
-				await client.set(
+				await redisConnection.set(
 					filter(category),
 					JSON.stringify({
 						category: category,
@@ -246,7 +246,7 @@ export default class FilterController {
 				)
 			}
 
-			const result = await client.get(filter(category))
+			const result = await redisConnection.get(filter(category))
 
 			if (result === null) {
 				return next(new createHttpError.NotFound('Category not found'))
