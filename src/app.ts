@@ -29,7 +29,6 @@ import brandRoutes from './routes/brand.routes'
 import productModelRoutes from './routes/productModel.routes'
 import filterRoutes from './routes/filter.routes'
 import formFieldsRoutes from './routes/formFields.routes'
-import Auth from './controllers/auth/Auth'
 
 const app: Express = express()
 
@@ -95,8 +94,8 @@ app.use(
 // Apply the rate limiting middleware to all requests
 // app.use(limiter)
 
-app.use('/api/v1/auth/customer', customerRoutes)
-app.use('/api/v1/auth/seller', sellerRoutes)
+app.use('/api/v1/customer', customerRoutes)
+app.use('/api/v1/seller', sellerRoutes)
 app.use('/api/v1/product', productRoutes)
 app.use('/api/v1/category', categoryRoutes)
 app.use('/api/v1/address', addressRoutes)
