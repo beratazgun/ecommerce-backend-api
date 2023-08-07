@@ -7,11 +7,11 @@ const addressController: AddressController = new AddressController()
 
 router.use(isLoggedIn, checkCSRFToken)
 
-router.post('/create', addressController.createAddress)
+router.post('/account/me/add', addressController.createAddress)
 
-router.delete('/delete', addressController.deleteAddress)
+router.delete('/account/me/delete', addressController.deleteAddress)
 
-router.patch('/update', addressController.updateAddress)
-router.get('/get/me', addressController.getAllAddress)
+router.patch('/account/me/update', addressController.updateAddress)
+router.get('/account/me/getall', addressController.getAllAddress)
 
 export default router

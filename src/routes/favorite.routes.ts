@@ -7,8 +7,8 @@ const favoriteController = new FavoriteController()
 router.use(isLoggedIn)
 
 router.post('/add', favoriteController.AddFavorite)
-router.get('/get-all', favoriteController.GetFavorite)
-router.post('/is-favorite', favoriteController.IsFavorite)
+router.get('/getall', favoriteController.GetFavorite)
+router.post('/isfavorite', favoriteController.IsFavorite)
 router.delete('/remove', favoriteController.RemoveFavorite)
 
 export default router
