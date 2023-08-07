@@ -6,10 +6,10 @@ const router: Router = Router()
 const customerController: CustomerController = new CustomerController()
 
 // this route is going to signup new user
-router.post('/signup', customerController.signup)
+router.post('/auth/signup', customerController.signup)
 
 // this route is going to signin existing user
-router.post('/signin', customerController.signin)
+router.post('/auth/signin', customerController.signin)
 // this route is going to confirm account by verifying token sent to user's email
 router.post('/verify/confirm-account/:token', customerController.confirmAccount)
 
@@ -30,7 +30,7 @@ router.patch('/reset-password/:token', customerController.resetPassword)
 // this route is going to get current logged in user
 router.get('/account/me', customerController.getMe)
 // this route is going to logout current logged in user
-router.post('/logout', customerController.logout)
+router.post('/account/logout', customerController.logout)
 // this route is going to update password but just for logged in user
 router.post('/account/me/update-password', customerController.updatePassword)
 
